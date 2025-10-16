@@ -1,0 +1,49 @@
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: 3.x
+    - &id001
+      name: Install DVC
+      run: pip install dvc
+    - &id002
+      name: Initialize DVC
+      run: dvc init
+    - &id003
+      name: Pull Data and Models
+      run: dvc pull
+    - name: Build Project
+      run: make build
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: 3.x
+    - name: Install Linters
+      run: pip install flake8
+    - name: Run Linting Checks
+      run: flake8 .
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: 3.x
+    - name: Install Dependencies
+      run: pip install -r requirements.txt
+    - *id001
+    - *id002
+    - *id003
+    - name: Run Tests
+      run: pytest
+name: CI/CD Pipeline
+'on':
+  push:
+    branches:
+    - main
